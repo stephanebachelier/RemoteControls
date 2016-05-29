@@ -16,6 +16,32 @@ static RemoteControls *remoteControls = nil;
 - (void)pluginInitialize
 {
     NSLog(@"RemoteControls plugin init.");
+    
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveRemoteEvent:) name:@"receivedEvent" object:nil];
+    
+
+    MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
+    RemoteControls * __weak weakSelf = self;
+    
+    [commandCenter.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        [weakSelf receivedEvent:@"play"];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    
+    [commandCenter.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        [weakSelf receivedEvent:@"pause"];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    
+    [commandCenter.togglePlayPauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        [weakSelf receivedEvent:@"playpause"];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    
+    commandCenter.previousTrackCommand.enabled = NO;
+    commandCenter.nextTrackCommand.enabled = NO;
+
 }
 
 - (void)updateMetas:(CDVInvokedUrlCommand*)command
