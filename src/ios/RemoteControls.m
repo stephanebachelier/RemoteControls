@@ -56,6 +56,11 @@ static RemoteControls *remoteControls = nil;
     // async cover loading
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         UIImage *image = nil;
+        
+        if (!cover) {
+            return;
+        }
+
         // check whether cover path is present
         if (![cover isEqual: @""]) {
             // cover is remote file
